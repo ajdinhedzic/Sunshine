@@ -1,5 +1,6 @@
 package android.example.com.sunshine.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -46,54 +47,58 @@ public class ForecastFragment extends Fragment {
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
-
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
-
-        String forecastJsonStr = null;
-        try {
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                forecastJsonStr = null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-            //appending  to JSON makes debugging easier
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
-                forecastJsonStr = null;
-            }
-            forecastJsonStr = buffer.toString();
-        } catch (IOException e) {
-            Log.e("ForecastFragment", "Error ", e);
-            forecastJsonStr = null;
-        } finally{
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e("ForecastFragment", "Error closing stream", e);
-                }
-            }
-        }
-
-
         return rootView;
     }
 
+    public class FetchWeatherTask extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] params) {
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            String forecastJsonStr = null;
+            try {
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    forecastJsonStr = null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                //appending  to JSON makes debugging easier
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    forecastJsonStr = null;
+                }
+                forecastJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e("ForecastFragment", "Error ", e);
+                forecastJsonStr = null;
+            } finally{
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("ForecastFragment", "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
+    }
 
 
 
