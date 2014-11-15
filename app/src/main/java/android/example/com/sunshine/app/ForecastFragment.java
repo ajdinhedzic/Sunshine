@@ -50,10 +50,12 @@ public class ForecastFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchWeatherTask extends AsyncTask {
+    public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
+
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected Object doInBackground(Object[] params) {
+        protected Void doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
 
@@ -68,7 +70,7 @@ public class ForecastFragment extends Fragment {
                 InputStream inputStream = urlConnection.getInputStream();
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
-                    forecastJsonStr = null;
+                    return null;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
                 String line;
@@ -78,12 +80,12 @@ public class ForecastFragment extends Fragment {
                 }
 
                 if (buffer.length() == 0) {
-                    forecastJsonStr = null;
+                    return null;
                 }
                 forecastJsonStr = buffer.toString();
             } catch (IOException e) {
-                Log.e("ForecastFragment", "Error ", e);
-                forecastJsonStr = null;
+                Log.e(LOG_TAG, "Error ", e);
+                return null;
             } finally{
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -92,7 +94,7 @@ public class ForecastFragment extends Fragment {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e("ForecastFragment", "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing stream", e);
                     }
                 }
             }
