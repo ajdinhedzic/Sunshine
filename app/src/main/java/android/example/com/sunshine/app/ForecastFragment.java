@@ -46,6 +46,8 @@ public class ForecastFragment extends Fragment {
         //handle action bar item clicks
         int id = item.getItemId();
         if(id == R.id.action_refresh){
+            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+            fetchWeatherTask.execute();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -109,6 +111,8 @@ public class ForecastFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 return null;
