@@ -174,7 +174,7 @@ public class ForecastFragment extends Fragment {
             String forecastJsonStr = null;
 
             String format = "json";
-            String units = "metric";
+            String units = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(getString(R.string.pref_units_key),getString(R.string.pref_units_default));
             int numDays = 7;
 
             try {
